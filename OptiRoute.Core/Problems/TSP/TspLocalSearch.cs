@@ -1,6 +1,4 @@
-using System.Collections.Concurrent;
-
-namespace OptiRoute.Core.Algorithms.TSP;
+namespace OptiRoute.Core.Problems.TSP;
 
 /// <summary>
 /// Local search improvements for TSP (based on VROOM's TSP LocalSearch).

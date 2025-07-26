@@ -1,7 +1,6 @@
-using OptiRoute.Core.Models;
-using OptiRoute.Core.Utils;
+using OptiRoute.Core.Algorithms;
 
-namespace OptiRoute.Core.Algorithms.TSP;
+namespace OptiRoute.Core.Problems.TSP;
 
 /// <summary>
 /// Implements the Christofides heuristic for TSP (inspired by VROOM).

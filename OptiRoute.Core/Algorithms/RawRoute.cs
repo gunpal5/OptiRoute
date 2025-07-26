@@ -1,5 +1,5 @@
 using OptiRoute.Core.Models;
-using OptiRoute.Core.Algorithms.VRP;
+using OptiRoute.Core.Problems.VRP;
 
 namespace OptiRoute.Core.Algorithms;
 
@@ -527,6 +527,36 @@ public class RawRoute : IRoute
     }
 
     #endregion
+    
+    // Additional IRoute interface implementations
+    public int VehicleId => VehicleRank;
+    
+    public void Add(int jobIndex)
+    {
+        Add(_input, jobIndex, Route.Count);
+    }
+    
+    public void Add(int jobIndex, int position)
+    {
+        Add(_input, jobIndex, position);
+    }
+    
+    public bool CanAddForCapacity(Amount pickup, Amount delivery)
+    {
+        // Check if we can add considering current capacity
+        var currentPickup = Route.Count > 0 ? _fwdPickups[Route.Count - 1] : _zero;
+        var currentDelivery = Route.Count > 0 ? _fwdDeliveries[Route.Count - 1] : _zero;
+        
+        return (currentPickup + pickup <= Capacity) && 
+               (currentDelivery + delivery <= Capacity);
+    }
+    
+    public Eval Eval()
+    {
+        // Simple evaluation - return zero for now
+        // In a full implementation, this would calculate route cost/duration/distance
+        return new Eval(0, 0, 0);
+    }
     
     /// <summary>
     /// Checks if adding a job is valid considering only the load up to a certain point.

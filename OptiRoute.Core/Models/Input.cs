@@ -1,6 +1,5 @@
 using OptiRoute.Core.DistanceMatrix;
 using OptiRoute.Core.Algorithms;
-using OptiRoute.Core.Algorithms.VRP;
 
 namespace OptiRoute.Core.Models;
 
@@ -29,6 +28,7 @@ public class Input
     private List<List<bool>>? _vehicleToJobCompatibility;
     private List<List<bool>>? _vehicleToVehicleCompatibility;
     private bool _hasSkills = false;
+    private bool _homogeneousLocations = true;
 
     /// <summary>
     /// Gets all jobs in the problem.
@@ -95,6 +95,11 @@ public class Input
     /// Gets the problem type detected.
     /// </summary>
     public ProblemType ProblemType { get; private set; } = ProblemType.TSP;
+    
+    /// <summary>
+    /// Gets whether all vehicles have the same start and end locations.
+    /// </summary>
+    public bool HasHomogeneousLocations => _homogeneousLocations;
 
     /// <summary>
     /// Adds a job to the problem.
@@ -151,6 +156,20 @@ public class Input
         
         // Check amount size consistency
         CheckAmountSize(vehicle.Capacity);
+        
+        // Check homogeneous locations
+        if (_vehicles.Count > 0 && _homogeneousLocations)
+        {
+            var firstVehicle = _vehicles[0];
+            bool sameStart = (firstVehicle.StartLocation == null && vehicle.StartLocation == null) ||
+                           (firstVehicle.StartLocation != null && vehicle.StartLocation != null && 
+                            firstVehicle.StartLocation.Equals(vehicle.StartLocation));
+            bool sameEnd = (firstVehicle.EndLocation == null && vehicle.EndLocation == null) ||
+                         (firstVehicle.EndLocation != null && vehicle.EndLocation != null && 
+                          firstVehicle.EndLocation.Equals(vehicle.EndLocation));
+            
+            _homogeneousLocations = sameStart && sameEnd;
+        }
         
         _vehicles.Add(vehicle);
         
@@ -218,6 +237,46 @@ public class Input
         return true;
     }
 
+    /// <summary>
+    /// Gets the location index for a given location.
+    /// </summary>
+    public int GetLocationIndex(Location location)
+    {
+        if (_locationToIndex.TryGetValue(location, out var index))
+            return index;
+        throw new ArgumentException($"Location not found in input: {location}");
+    }
+    
+    /// <summary>
+    /// Gets the location index for a job.
+    /// </summary>
+    public int GetJobLocationIndex(int jobIndex)
+    {
+        return GetLocationIndex(_jobs[jobIndex].Location);
+    }
+    
+    /// <summary>
+    /// Gets the start location index for a vehicle.
+    /// </summary>
+    public int GetVehicleStartIndex(int vehicleIndex)
+    {
+        var vehicle = _vehicles[vehicleIndex];
+        if (vehicle.StartLocation == null)
+            throw new InvalidOperationException($"Vehicle {vehicle.Id} has no start location");
+        return GetLocationIndex(vehicle.StartLocation);
+    }
+    
+    /// <summary>
+    /// Gets the end location index for a vehicle.
+    /// </summary>
+    public int GetVehicleEndIndex(int vehicleIndex)
+    {
+        var vehicle = _vehicles[vehicleIndex];
+        if (vehicle.EndLocation == null)
+            throw new InvalidOperationException($"Vehicle {vehicle.Id} has no end location");
+        return GetLocationIndex(vehicle.EndLocation);
+    }
+    
     /// <summary>
     /// Gets the evaluation (cost, duration, distance) between two locations for a vehicle.
     /// </summary>
@@ -477,15 +536,6 @@ public class Input
         }
     }
     
-    /// <summary>
-    /// Gets the index of a location.
-    /// </summary>
-    public int GetLocationIndex(Location location)
-    {
-        if (_locationToIndex.TryGetValue(location, out var index))
-            return index;
-        return -1;
-    }
     
     /// <summary>
     /// Gets zero costs (used for initialization).

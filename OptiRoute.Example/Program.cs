@@ -1,7 +1,7 @@
 using OptiRoute.Core.Models;
-using OptiRoute.Core.Algorithms.TSP;
-using OptiRoute.Core.Algorithms.CVRP;
 using OptiRoute.Core.DistanceMatrix;
+using OptiRoute.Core.Problems.CVRP;
+using OptiRoute.Core.Problems.TSP;
 
 namespace OptiRoute.Example;
 

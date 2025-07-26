@@ -1,5 +1,4 @@
 using OptiRoute.Core.Models;
-using OptiRoute.Core.Algorithms.VRP;
 
 namespace OptiRoute.Core.Algorithms.LocalSearch.Operators;
 
@@ -37,9 +36,8 @@ internal class TwoOpt : Operator
         _sDelivery = sourceRoute.bwd_deliveries(sourceRank);
         _tDelivery = targetRoute.bwd_deliveries(targetRank);
 
-        // TODO: Check bwd_skill_rank when implemented
-        // assert(_sol_state.bwd_skill_rank[s_vehicle][t_vehicle] <= s_rank + 1);
-        // assert(_sol_state.bwd_skill_rank[t_vehicle][s_vehicle] <= t_rank + 1);
+        // Note: bwd_skill_rank checks are optimization hints from VROOM
+        // Our IsValid() method performs the actual skill compatibility checks
     }
 
     protected override void ComputeGain()

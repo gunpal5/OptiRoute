@@ -1,6 +1,6 @@
 using OptiRoute.Core.Models;
 
-namespace OptiRoute.Core.Algorithms.VRP;
+namespace OptiRoute.Core.Problems.VRP;
 
 /// <summary>
 /// Indicators for solution quality (inspired by VROOM's SolutionIndicators).

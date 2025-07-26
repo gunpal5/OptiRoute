@@ -1,5 +1,4 @@
 using OptiRoute.Core.Models;
-using OptiRoute.Core.Algorithms.VRP;
 using static OptiRoute.Core.Algorithms.LocalSearch.SwapStarUtils;
 
 namespace OptiRoute.Core.Algorithms.LocalSearch.Operators;

@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using OptiRoute.Core.Models;
-using OptiRoute.Core.Algorithms.VRP;
 using OptiRoute.Core.Algorithms.LocalSearch.Operators;
+using OptiRoute.Core.Problems.VRP;
 using OptiRoute.Core.Utils;
 
 namespace OptiRoute.Core.Algorithms.LocalSearch;
@@ -42,7 +42,7 @@ internal class LocalSearch
         }
         
         // Setup solution state
-        _solutionState.Setup(_solution);
+        _solutionState.Setup(_solution.Cast<IRoute>().ToList());
         
         _bestCost = ComputeTotalCost();
     }

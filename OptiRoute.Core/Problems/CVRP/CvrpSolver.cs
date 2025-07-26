@@ -1,8 +1,9 @@
-using OptiRoute.Core.Models;
-using OptiRoute.Core.Algorithms.VRP;
+using OptiRoute.Core.Algorithms;
 using OptiRoute.Core.Algorithms.Heuristics;
+using OptiRoute.Core.Models;
+using OptiRoute.Core.Problems.VRP;
 
-namespace OptiRoute.Core.Algorithms.CVRP;
+namespace OptiRoute.Core.Problems.CVRP;
 
 /// <summary>
 /// Capacitated Vehicle Routing Problem solver (based on VROOM's CVRP).
@@ -47,10 +48,7 @@ public class CvrpSolver : VrpSolver
 
     protected override List<HeuristicParameters> GetDefaultParameters()
     {
-        // TODO: Check if input has homogeneous locations
-        bool hasHomogeneousLocations = true; // Placeholder
-        
-        return hasHomogeneousLocations ? HomogeneousParameters : HeterogeneousParameters;
+        return _input.HasHomogeneousLocations ? HomogeneousParameters : HeterogeneousParameters;
     }
 
     protected override Solution FormatSolution<TRoute>(List<TRoute> routes)

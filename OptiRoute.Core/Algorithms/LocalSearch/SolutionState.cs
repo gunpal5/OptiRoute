@@ -1,4 +1,5 @@
 using OptiRoute.Core.Models;
+using OptiRoute.Core.Problems.VRP;
 
 namespace OptiRoute.Core.Algorithms.LocalSearch;
 
@@ -188,7 +189,7 @@ internal class SolutionState
     /// <summary>
     /// Setup the solution state for all routes.
     /// </summary>
-    public void Setup(List<RawRoute> solution)
+    public void Setup(List<IRoute> solution)
     {
         for (int v = 0; v < solution.Count; v++)
         {
@@ -215,7 +216,7 @@ internal class SolutionState
     /// <summary>
     /// Update state for a single route.
     /// </summary>
-    public void UpdateRoute(int vehicleIndex, RawRoute route)
+    public void UpdateRoute(int vehicleIndex, IRoute route)
     {
         var vehicle = _input.Vehicles[vehicleIndex];
         var routeJobs = route.Route;
@@ -227,10 +228,10 @@ internal class SolutionState
         UpdateCosts(vehicleIndex, routeJobs);
 
         // Update node gains
-        UpdateNodeGains(vehicleIndex, vehicle, routeJobs);
+        UpdateNodeGains(vehicleIndex, vehicle, route, routeJobs);
 
         // Update edge gains
-        UpdateEdgeGains(vehicleIndex, vehicle, routeJobs);
+        UpdateEdgeGains(vehicleIndex, vehicle, route, routeJobs);
 
         // Update matching delivery ranks for pickup-delivery pairs
         UpdateMatchingDeliveryRanks(vehicleIndex, routeJobs);
@@ -352,7 +353,7 @@ internal class SolutionState
         }
     }
 
-    private void UpdateNodeGains(int vehicleIndex, Vehicle vehicle, List<int> route)
+    private void UpdateNodeGains(int vehicleIndex, Vehicle vehicle, IRoute fullRoute, List<int> route)
     {
         NodeGains[vehicleIndex].Clear();
 
@@ -428,7 +429,7 @@ internal class SolutionState
         return before + after - removed;
     }
 
-    private void UpdateEdgeGains(int vehicleIndex, Vehicle vehicle, List<int> route)
+    private void UpdateEdgeGains(int vehicleIndex, Vehicle vehicle, IRoute fullRoute, List<int> route)
     {
         EdgeGains[vehicleIndex].Clear();
 

@@ -1,6 +1,6 @@
 using OptiRoute.Core.Models;
 
-namespace OptiRoute.Core.Algorithms.TSP;
+namespace OptiRoute.Core.Problems.TSP;
 
 /// <summary>
 /// Solves the Traveling Salesman Problem (inspired by VROOM's TSP implementation).

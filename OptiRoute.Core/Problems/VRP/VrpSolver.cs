@@ -1,8 +1,8 @@
-using OptiRoute.Core.Models;
+using OptiRoute.Core.Algorithms;
 using OptiRoute.Core.Algorithms.Heuristics;
-using OptiRoute.Core.Algorithms.LocalSearch;
+using OptiRoute.Core.Models;
 
-namespace OptiRoute.Core.Algorithms.VRP;
+namespace OptiRoute.Core.Problems.VRP;
 
 /// <summary>
 /// Abstract base class for vehicle routing problems (inspired by VROOM's VRP class).
@@ -155,7 +155,7 @@ public abstract class VrpSolver
         }).ToList();
 
         var deadline = lsTimeout.HasValue ? DateTime.UtcNow + lsTimeout.Value : DateTime.MaxValue;
-        var localSearch = new LocalSearch.LocalSearch(_input, rawRoutes, depth, deadline);
+        var localSearch = new Algorithms.LocalSearch.LocalSearch(_input, rawRoutes, depth, deadline);
         localSearch.Run();
 
         // Copy back results
@@ -256,8 +256,70 @@ internal class SolvingContext<TRoute> where TRoute : IRoute, new()
             routes.Add(route);
         }
 
-        // TODO: Handle initial routes if provided
+        // Handle initial routes if provided
+        if (HasInitialRoutes(input))
+        {
+            SetInitialRoutes(input, routes);
+        }
+
         return routes;
+    }
+    
+    /// <summary>
+    /// Checks if any vehicle has initial routes.
+    /// </summary>
+    private bool HasInitialRoutes(Input input)
+    {
+        return input.Vehicles.Any(v => v.Steps.Count > 0);
+    }
+    
+    /// <summary>
+    /// Sets initial routes from vehicle steps.
+    /// </summary>
+    private void SetInitialRoutes(Input input, List<TRoute> routes)
+    {
+        var assigned = new HashSet<int>();
+        
+        for (int v = 0; v < input.Vehicles.Count; v++)
+        {
+            var vehicle = input.Vehicles[v];
+            var route = routes[v];
+            
+            if (vehicle.Steps.Count == 0)
+                continue;
+                
+            // Process vehicle steps
+            foreach (var step in vehicle.Steps)
+            {
+                if (step.Type == VehicleStepType.Job && !string.IsNullOrEmpty(step.JobId))
+                {
+                    // Find job index by ID
+                    var jobIndex = -1;
+                    for (int j = 0; j < input.Jobs.Count; j++)
+                    {
+                        if (input.Jobs[j].Id == step.JobId)
+                        {
+                            jobIndex = j;
+                            break;
+                        }
+                    }
+                    
+                    if (jobIndex >= 0 && !assigned.Contains(jobIndex))
+                    {
+                        // Check vehicle-job compatibility
+                        if (!input.VehicleOkWithJob(v, jobIndex))
+                        {
+                            throw new InvalidOperationException(
+                                $"Vehicle {vehicle.Id} is not compatible with job {step.JobId} in initial route.");
+                        }
+                        
+                        // Add job to route
+                        route.Add(jobIndex);
+                        assigned.Add(jobIndex);
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -271,4 +333,14 @@ public interface IRoute
     Amount GetCapacity();
     List<int> GetJobSequence();
     void InsertJob(int jobRank, int position);
+    
+    // Additional properties needed by implementations
+    List<int> Route { get; }
+    int VehicleId { get; }
+    void Add(int jobIndex);
+    void Add(int jobIndex, int position);
+    bool CanAddForCapacity(Amount pickup, Amount delivery);
+    Eval Eval();
+    int Size { get; }
+    bool Empty { get; }
 }
