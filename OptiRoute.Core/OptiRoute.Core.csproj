@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    
+    <!-- NuGet Package Information -->
+    <PackageId>OptiRoute.Net</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>OptiRoute Contributors</Authors>
+    <Company>OptiRoute</Company>
+    <Product>OptiRoute.Net</Product>
+    <Description>A high-performance route optimization library for .NET, inspired by VROOM. Solves Vehicle Routing Problems (VRP), Traveling Salesman Problems (TSP), and other routing optimization challenges.</Description>
+    <PackageTags>routing;optimization;vrp;tsp;cvrp;vehicle-routing;logistics;osrm</PackageTags>
+    <PackageProjectUrl>https://github.com/yourusername/OptiRoute.Net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/yourusername/OptiRoute.Net</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    
+    <!-- Enable documentation file generation -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" Condition="Exists('..\..\README.md')" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.7" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+  </ItemGroup>
+
+</Project>
